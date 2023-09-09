@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'reac
 import { Picker } from '@react-native-picker/picker'; 
 import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native'; 
-import QRGeneratedScreen from './QRGeneratedScreen';
+// import QRGeneratedScreen from './QRGeneratedScreen';
 //import { Ionicons } from '@expo/vector-icons';
 
         const Registration = () => {
