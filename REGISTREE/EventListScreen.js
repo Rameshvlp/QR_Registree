@@ -28,55 +28,55 @@ const eventsData = [
   {
     id: '3',
     title: 'Code Sprint',
-    description: 'Test your coding skills in this coding competition...',
+    description: 'Code your way to the Excellence!!...',
     imageName: 'sport',
 
   },
   {
     id: '4',
     title: 'NetHunt',
-    description: 'Test your coding skills in this coding competition...',
+    description: 'An Unsolved Mystery with the usual Suspect!!...',
     imageName: 'map',
 
   },
   {
     id: '5',
     title: 'Techgig',
-    description: 'Test your coding skills in this coding competition...',
+    description: 'Our Vision!! Your Innovation!!...',
     imageName: 'interactive',
 
   },
   {
     id: '6',
     title: 'Invenier',
-    description: 'Test your coding skills in this coding competition...',
+    description: 'Unlocking the potentials of tommorrow! with invenier...',
     imageName: 'caveman',
 
   },
   {
     id: '7',
     title: 'Flip-Flop',
-    description: 'Test your coding skills in this coding competition...',
-    imageName: 'coin',
+    description: 'Contend, Contradict and Convience!...',
+    imageName:'coin',
 
   },
   {
     id: '8',
     title: 'CyberNerd',
-    description: 'Test your coding skills in this coding competition...',
+    description: 'There is always a way to the success...',
     imageName: 'cy',
   },
   {
     id: '9',
     title: 'Artistry',
-    description: 'Test your coding skills in this coding competition...',
+    description: 'Look at Usual things with unusual eyes!!...',
     imageName: 'pai',
 
   },
   {
     id: '10',
     title: 'Techiadz',
-    description: 'Test your coding skills in this coding competition...',
+    description: 'A tech adz that beat fuel to your victory!!...',
     imageName: 'ro',
 
   },

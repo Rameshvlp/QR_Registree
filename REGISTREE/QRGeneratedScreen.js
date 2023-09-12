@@ -13,14 +13,14 @@ const QRGeneratedScreen = ({ route }) => {
   useEffect(() => {
     setTimeout(() => {
       setShowImage(false);
-    }, 2000);
+    }, 4500);
   }, []);
 
   return (
     <View style={styles.container}>
       {showImage ? (
         <>
-          <Image source={require('./assets/check.png')} style={styles.image} />
+          <Image source={require('./assets/ticks.gif')} style={styles.image} />
           <Text style={styles.title}>Successfully Registered</Text>
 
         </>
@@ -49,8 +49,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     marginTop: -100,
     marginBottom: 20,
   },
