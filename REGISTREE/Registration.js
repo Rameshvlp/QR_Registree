@@ -1,30 +1,57 @@
-import React, { useState } from 'react';
+// AnotherScreen.js// AnotherScreen.js
+import React, { useState,useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; 
 import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native'; 
+import QRGeneratedScreen from './QRGeneratedScreen';
+//import { Ionicons } from '@expo/vector-icons';
+import { firebase } from './config';
+// npm install @react-native-picker/picker react-native-toast-message @react-navigation/native firebase 
+// npm install react-native-gesture-handler @react-navigation/native @react-navigation/stack
+        const Registration = () => {
+        const navigation =useNavigation();
+        const [name, setName] = useState(''); 
+        const [email, setEmail] = useState('');
+        const [department, setDepartment] = useState('');
+        const [college, setCollege] = useState('');
+        const [selectedEvent, setSelectedEvent] = useState('Select Event');
+        const [isEmailValid, setIsEmailValid] = useState(true);
+        const [isAllFieldsFilled, setIsAllFieldsFilled] = useState(false); 
+        //const [checkname, setCheckName] = useState('Name1'); // Set the initial name
+        const [currentCount, setCurrentCount] = useState(null);
 
-const Registration = () => {
-  const navigation = useNavigation();
-  const [name, setName] = useState(''); 
-  const [email, setEmail] = useState('');
-  const [department, setDepartment] = useState('');
-  const [college, setCollege] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState(''); // Initialize with an empty string
-  const [isEmailValid, setIsEmailValid] = useState(true);
-  const [eventTouches, setEventTouches] = useState({}); // Store touches for each event
-  const eventNames = [
-    'Cyberfest',
-    'Code Ninja',
-    'Code Sprint',
-    'NetHunt',
-    'Techgig',
-    'Invenier',
-    'Flip-Flop',
-    'CyberNerd',
-    'Artistry',
-    'Techiadz',
-  ];
+
+  
+        useEffect(() => {
+          // Initialize Firebase and retrieve the current count
+          const db = firebase.firestore();
+          const documentRef = db.collection('Eventcount').doc(selectedEvent);
+      
+          documentRef.get()
+            .then(doc => {
+              if (doc.exists) {
+                setCurrentCount(doc.data().count);
+              } else {
+                
+                console.log('Document does not exist. Creating a new one.');
+                
+                documentRef.set({ count: 1 })
+                  .then(() => {
+                    setCurrentCount(1);
+                    console.log('New document created.');
+                    
+                  })
+                  .catch(error => {
+                    console.error('Error creating new document:', error);
+                  });
+              }
+            })
+            .catch(error => {
+              console.error('Error getting document:', error);
+            });
+        }, [selectedEvent]);
+
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,10 +59,21 @@ const Registration = () => {
   };
 
   const checkAllFieldsFilled = () => {
-    return name && email && department && college && selectedEvent;
+    return name && email && department && college && selectedEvent !== 'Select Event';
   }
+  
 
-  const handleGenerateQR = () => {
+  const handleGenerateQR = async () => {
+    if (!name || !email || !department || !college || selectedEvent === 'Select Event') {
+      console.log('Please fill in all the details');
+      Toast.show({
+        type: 'error',
+        text1: 'Please fill all the details to get',
+        position: 'top',
+      });
+      return;
+    }
+
     if (!checkAllFieldsFilled()) {
       console.log('Please fill in all the details');
       Toast.show({
@@ -45,6 +83,7 @@ const Registration = () => {
       });
       return;
     }
+    setIsAllFieldsFilled(true);
 
     if (!isValidEmail(email)) {
       console.log('Invalid email format');
@@ -57,22 +96,32 @@ const Registration = () => {
       return;
     }
 
-    // Check if the selectedEvent has reached the touch limit (25)
-    if (eventTouches[selectedEvent] >= 25) {
-      console.log('Maximum participant count reached for', selectedEvent);
+
+    if (currentCount < 2) {
+      // Increment the count for the selected name
+      
+      const documentRef = await firebase.firestore().collection('Eventcount').doc(selectedEvent);
+
+      const newCount = currentCount + 1;
+
+      documentRef.update({ count: newCount })
+        .then(() => {
+          setCurrentCount(newCount);
+          console.log(`Count incremented to ${newCount}`);
+        })
+        .catch(error => {
+          console.error('Error updating count:', error);
+        });
+    } else {
+      console.log('Count is full');
+      
       Toast.show({
         type: 'error',
-        text1: `Maximum participants reached for ${selectedEvent}`,
+        text1: 'count is full ',
         position: 'top',
       });
       return;
     }
-
-    // Update the event touches count
-    setEventTouches({
-      ...eventTouches,
-      [selectedEvent]: (eventTouches[selectedEvent] || 0) + 1,
-    });
 
     console.log('Generating QR with data:', {
       name,
@@ -81,8 +130,7 @@ const Registration = () => {
       college,
       selectedEvent,
     });
-
-    navigation.navigate('QR Screen', {
+    navigation.navigate('QR Screen',{
       name,
       email,
       department,
@@ -92,10 +140,12 @@ const Registration = () => {
   };
 
   return (
+    
     <View style={styles.container}>
       <Image
-        source={require('./assets/account.png')}
-        style={styles.image}
+      source={require('./assets/account.png')}
+      style={styles.image}
+      
       />
       <Text style={styles.title}>Registration Form</Text>
       <TextInput
@@ -112,6 +162,7 @@ const Registration = () => {
         ]}
         value={email}
         onChangeText={(text) => {
+
           setEmail(text);
           setIsEmailValid(true); 
         }
@@ -129,23 +180,32 @@ const Registration = () => {
         value={college}
         onChangeText={setCollege}
       />
-      <Text style={styles.title}>Select any Event Below</Text>
-      <Picker
+            <Text style={styles.title}>Select any Event Below</Text>
+             <Picker
         selectedValue={selectedEvent}
-        onValueChange={(itemValue) => setSelectedEvent(itemValue)}
+        onValueChange={(itemValue, itemIndex) => setSelectedEvent(itemValue)}
         style={styles.picker}
       >
-        <Picker.Item label="Select Any" value="" />
-        {eventNames.map((eventName) => (
-          <Picker.Item
-            key={eventName}
-            label={`${eventName} (${eventTouches[eventName] || 0}/25)`}
-            value={eventName}
-          />
-        ))}
+      
+        <Picker.Item label="Select Any" value=""/>
+        <Picker.Item label="1.Cyberfest" value="cyberfest" />
+        <Picker.Item label="2.Code Ninja" value="code_ninja" />
+        <Picker.Item label="3.Code Sprint" value="Code Sprint" />
+        <Picker.Item label="4.NetHunt" value="NetHunt" />
+        <Picker.Item label="5.Techgig" value="Techgig" />
+        <Picker.Item label="6.Invenier" value="Invenier" />
+        <Picker.Item label="7.Flip-Flop" value="Flip-Flop" />
+        <Picker.Item label="8.CyberNerd" value="CyberNerd" />
+        <Picker.Item label="9.Artistry" value="Artistry" />
+        <Picker.Item label="10.Techiadz" value="Techiadz" />
+
       </Picker>
       <TouchableOpacity onPress={handleGenerateQR} style={styles.button}>
-        <Text style={styles.buttonText}>Generate QR</Text>
+        {/* {isAllFieldsFilled ? (
+          <Ionicons name="checkmark" size={24} color="white" />
+        ) : (tick)} */}
+                  <Text style={styles.buttonText}>Generate QR</Text>
+
       </TouchableOpacity>
       <Toast ref={(ref) => Toast.setRef(ref)} />
     </View>
@@ -184,7 +244,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#0099ff',
+    backgroundColor: '#007BFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -196,9 +256,9 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 70,
-    height: 70,
-    marginBottom: 20,
-  },
+  height: 70,
+  marginBottom: 20,
+  }
 });
 
 export default Registration;
