@@ -3,7 +3,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 
 const firebaseConfig={
-    apiKey: "AIzaSyDGj4Gw3pucthISZ_lahzPO60gw983FvOc",
+  apiKey: "AIzaSyDGj4Gw3pucthISZ_lahzPO60gw983FvOc",
   authDomain: "qr-registree-mad.firebaseapp.com",
   projectId: "qr-registree-mad",
   storageBucket: "qr-registree-mad.appspot.com",

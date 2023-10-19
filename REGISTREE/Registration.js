@@ -5,10 +5,8 @@ import { Picker } from '@react-native-picker/picker';
 import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native'; 
 import QRGeneratedScreen from './QRGeneratedScreen';
-//import { Ionicons } from '@expo/vector-icons';
 import { firebase } from './config';
-// npm install @react-native-picker/picker react-native-toast-message @react-navigation/native firebase 
-// npm install react-native-gesture-handler @react-navigation/native @react-navigation/stack
+
         const Registration = () => {
         const navigation =useNavigation();
         const [name, setName] = useState(''); 
@@ -97,10 +95,10 @@ import { firebase } from './config';
     }
 
 
-    if (currentCount < 2) {
+    if (currentCount < 5) {
       // Increment the count for the selected name
       
-      const documentRef = await firebase.firestore().collection('Eventcount').doc(selectedEvent);
+      const documentRef = firebase.firestore().collection('Eventcount').doc(selectedEvent);
 
       const newCount = currentCount + 1;
 
@@ -117,7 +115,7 @@ import { firebase } from './config';
       
       Toast.show({
         type: 'error',
-        text1: 'count is full ',
+        text1: 'Maximun Participants reached... ',
         position: 'top',
       });
       return;
